@@ -1,0 +1,90 @@
+//Dijikstra Algorithem
+const Graphs = {
+    A: { B: 5, C: 2 },
+    B: { A: 5, C: 7, D: 8 },
+    C: { A: 2, B: 7, D: 4, E: 8 },
+    D: { B: 8, C: 4, E: 6, F: 4 },
+    E: { C: 8, D: 6, F: 3 },
+    F: { E: 3, D: 4 },
+  };
+  const PrintTable = (table) => {
+    return Object.keys(table)
+      .map((vertex) => {
+        var { vertex: from, cost } = table[vertex];
+        return `${vertex}: ${cost} via ${from}`;
+      })
+      .join("\n");
+  };
+  
+  const TracePath = (table, start, end) => {
+    var Path = [];
+    var next = end;
+    while (true) {
+      Path.unshift(next);
+      if (next === start) {
+        break;
+      }
+      next = table[next].vertex;
+    }
+  
+    return Path;
+  }; 
+  const FormatGraph = (g) => {
+    const temp = {};
+    Object.keys(g).forEach((k) => {
+      const obj = g[k];
+      const Arr = [];
+      Object.keys(obj).forEach((v) => Arr.push({ vertex: v, cost: obj[v] }));
+      temp[k] = Arr;
+    });
+    return temp;
+  };
+  
+  const Dijkstra = (graph, start, end) => {
+    var mapping = FormatGraph(graph);
+  
+    var visited = [];
+    var unvisited = [start];
+    var shortestDist = { [start]: { vertex: start, cost: 0 } };
+  
+    var vertex;
+    while ((vertex = unvisited.shift())) {
+      // Explore unvisited neighbors
+      var neighbors = mapping[vertex].filter((n) => !visited.includes(n.vertex));
+  
+      // Add neighbors to the unvisited list
+      unvisited.push(...neighbors.map((n) => n.vertex));
+  
+      var costToVertex = shortestDist[vertex].cost;
+  
+      for (let { vertex: to, cost } of neighbors) {
+        var currCostToNeighbor =
+          shortestDist[to] && shortestDist[to].cost;
+        var newCostToNeighbor = costToVertex + cost;
+        if (
+          currCostToNeighbor == undefined ||
+          newCostToNeighbor < currCostToNeighbor
+        ) {
+          // Update the table
+          shortestDist[to] = { vertex, cost: newCostToNeighbor };
+        }
+      }
+  
+      visited.push(vertex);
+    }
+  
+    console.log("The Table of costs:");
+    console.log(PrintTable(shortestDist));  
+    const path = TracePath(shortestDist, start, end);
+    console.log("The Shortest Path is: ",path.join(" -> ")," with weight ",shortestDist[end].cost);
+  };
+  Dijkstra(Graphs, "A", "F");
+//  Output-
+//  Table of costs:
+//A: 0 via A
+//B: 5 via A
+//C: 2 via A
+//D: 6 via C
+//E: 10 via C
+//F: 10 via D
+//The shortest path is:  A -> C -> D -> F  with weight  10
