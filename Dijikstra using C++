@@ -1,0 +1,78 @@
+/Dijikstra algorithem
+//Dijkstra's algorithm is an algorithm for finding the shortest paths between nodes in a graph, 
+//which may represent, for example, road networks. 
+#include<iostream>
+#include<stdio.h>
+using namespace std;
+#define INFINITY 9999
+#define MAX 6
+void dijkstra(int G[MAX][MAX],int n,int startnode);
+int main() 
+{
+    int G[MAX][MAX]={{0, 1, 2, 0, 0, 0},
+        {1, 0, 0, 5, 1, 0},
+        {2, 0, 0, 2, 3, 0},
+        {0, 5, 2, 0, 2, 2},
+        {0, 1, 3, 2, 0, 1},
+        {0, 0, 0, 2, 1, 0}};
+   int n=6;
+   int u=0;
+   dijkstra(G,n,u);
+   return 0;
+}
+void dijkstra(int G[MAX][MAX],int n,int startnode) {
+   int cost[MAX][MAX],Dist[MAX],Pred[MAX];
+   int visited[MAX],count,mindistance,nextnode,i,j;
+   for(i=0;i<n;i++)
+      for(j=0;j<n;j++)
+   if(G[i][j]==0)
+      cost[i][j]=INFINITY;
+   else
+      cost[i][j]=G[i][j];
+   for(i=0;i<n;i++) {
+      Dist[i]=cost[startnode][i];
+      Pred[i]=startnode;
+      visited[i]=0;
+   }
+   Dist[startnode]=0;
+   visited[startnode]=1;
+   count=1;
+   while(count<n-1) {
+      mindistance=INFINITY;
+      for(i=0;i<n;i++)
+         if(Dist[i]<mindistance&&!visited[i])
+         {
+         mindistance=Dist[i];
+         nextnode=i;
+          }
+      visited[nextnode]=1;
+      for(i=0;i<n;i++)
+         if(!visited[i])
+      if(mindistance+cost[nextnode][i]<Dist[i]) {
+         Dist[i]=mindistance+cost[nextnode][i];
+         Pred[i]=nextnode;
+      }
+      count++;
+   }
+   for(i=0;i<n;i++)
+   if(i!=startnode) {
+      cout<<"\nDistance of node:"<<i<<"=>"<<Dist[i];
+      cout<<"\nPath=>"<<i;
+      j=i;
+      do {
+         j=Pred[j];
+         cout<<"<="<<j;
+      }while(j!=startnode);
+   }
+}
+//Output-
+//Distance if nodes:1=>1
+//Path=>1<=0
+//Distance if nodes:2=>2
+//Path=>2<=0
+//Distance if nodes:3=>4
+//Path=>3<=2<=0
+//Distance if nodes:4=>2
+//Path=>4<=1<=0
+//Distance if nodes:5=>3
+//Path=>5<=4<=1<=0
